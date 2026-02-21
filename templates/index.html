@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地天文解析</title>
+    <!-- Tailwind CSS (样式) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTMX (交互) -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; }
+        .stars { background-image: radial-gradient(white 1px, transparent 1px); background-size: 50px 50px; }
+    </style>
+</head>
+<body class="min-h-screen stars flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-gray-900/80 backdrop-blur-md rounded-xl shadow-2xl border border-gray-700 overflow-hidden">
+        <!-- 头部 -->
+        <div class="p-6 border-b border-gray-700 text-center">
+            <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+                ✨ AstroLocal
+            </h1>
+            <p class="text-gray-400 text-sm mt-1">本地化天体标注系统</p>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="p-6" id="work-area">
+            
+            <!-- 上传表单 -->
+            <!-- hx-post: 发送 POST 请求 -->
+            <!-- hx-encoding: 必须用于文件上传 -->
+            <!-- hx-target: 将返回的内容替换掉 #result-area -->
+            <form hx-post="/upload" hx-encoding="multipart/form-data" hx-target="#result-area" class="space-y-4">
+                
+                <div class="flex items-center justify-center w-full">
+                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-700 transition-colors">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <p class="text-sm text-gray-400"><span class="font-semibold">点击上传</span> 或拖拽图片</p>
+                            <p class="text-xs text-gray-500 mt-1">JPG / JPEG (建议 < 10MB)</p>
+                        </div>
+                        <!-- onchange 脚本是为了选图后显示文件名 -->
+                        <input id="dropzone-file" name="file" type="file" class="hidden" accept="image/jpeg" onchange="document.getElementById('file-name').innerText = this.files[0].name" />
+                    </label>
+                </div>
+
+                <div class="text-center text-sm text-blue-300 h-5" id="file-name"></div>
+
+                <button type="submit" class="w-full text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all">
+                    开始解析
+                </button>
+            </form>
+            
+            <!-- 结果/进度显示区域 -->
+            <div id="result-area" class="mt-6"></div>
+
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+# --- Python 通用忽略 ---
+__pycache__/
+*.py[cod]
+*.so
+
+# --- 虚拟环境 (uv 默认创建 .venv) ---
+.venv/
+env/
+venv/
+
+# --- 项目特定数据 ---
+# 自动下载的数据库，无需上传
+NGC.csv
+
+# --- 运行时目录 (保留文件夹，但忽略内容) ---
+# 忽略 uploads 下的所有文件
+uploads/*
+# 忽略 static 下的所有文件 (生成的标注图)
+static/*
+
+# --- 排除保留文件 ---
+# 如果你想在 git 中保留这两个空文件夹结构，
+# 请在 uploads 和 static 文件夹内分别新建一个名为 .gitkeep 的空文件
+!uploads/.gitkeep
+!static/.gitkeep
+
+# --- Astrometry 中间文件 (防止散落在根目录) ---
+# 虽然你的脚本里有 cleanup，但防止意外残留
+*.wcs
+*.axy
+*.corr
+*.match
+*.rdls
+*.solved
+*.new
+*-indx.xyls
+*.ppm
+
+# --- 系统/IDE ---
+.DS_Store
+.vscode/
+.idea/
+*.log
