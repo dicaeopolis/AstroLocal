@@ -2,10 +2,9 @@
 
 **AstroLocal** 是一个基于 **Linux/WSL (Windows Subsystem for Linux)** 的本地天文盲解（Plate Solving）与标注工具。
 
-它将 **Astrometry.net** 引擎封装在一个现代化的 Web 界面中。按下面的操作部署，可为摄影镜头（80mm - 400mm 焦段）实现精准解析。无需上传图片到云端排队，利用本地算力实现解析，并自动叠加 **Messier/NGC/IC** 深空天体标注与星座连线。
+它将 **Astrometry.net** 引擎封装在一个现代化的 Web 界面中。按下面的操作部署，可为常用的摄影镜头焦段（80mm - 400mm 焦段）实现精准解析。无需上传图片到云端排队，利用本地算力实现解析，并自动叠加 **Messier/NGC/IC** 深空天体标注与星座连线。
 
 ![Screenshot Placeholder](./8c2cdf55-681c-4e99-a62f-840eafad1ee6_annotated.png)
-*(建议运行成功后截图放在这里)*
 
 ## 主要特性
 
