@@ -4,7 +4,7 @@
 
 它将 **Astrometry.net** 引擎封装在一个现代化的 Web 界面中。按下面的操作部署，可为常用的摄影镜头焦段（80mm - 400mm 焦段）实现精准解析。无需上传图片到云端排队，利用本地算力实现解析，并自动叠加 **Messier/NGC/IC** 深空天体标注与星座连线。
 
-![Screenshot Placeholder](./8c2cdf55-681c-4e99-a62f-840eafad1ee6_annotated.png)
+![Screenshot Placeholder](./annotated_example.png)
 
 ## 主要特性
 
@@ -12,7 +12,7 @@
 *   **深空天体标注**：
     *   自动下载并使用 **OpenNGC** 数据库（包含 NGC, IC, Messier）。
     *   **动态星等过滤**：视场大时只标亮星，视场小时标暗星，避免文字重叠。
-    *   **智能标注**：优先显示 M 编号（如 M31），支持黄色虚线框选范围。
+*   **赤道网格**：自动绘制赤道网格，并且利用GPS和图像EXIF信息计算拍摄时图像中心的赤道坐标和地平坐标。
 *   **星座连线**：自动绘制星座连线与边界。
 *   **现代化界面**：
     *   基于 **FastAPI + HTMX + TailwindCSS**。
@@ -70,12 +70,12 @@ sudo wget -c http://data.astrometry.net/4100/index-4116.fits
 
 ```bash
 # 进入项目目录
-cd ~/my_astro_web
+cd ~/astrolocal
 
 # 如果没有 uv，先安装: pip install uv
 # 初始化环境并安装依赖
 uv init
-uv add fastapi uvicorn python-multipart jinja2 pandas numpy astropy pillow requests scipy
+uv add fastapi uvicorn python-multipart jinja2 pandas numpy astropy pillow requests scipy timezonefinder pytz
 ```
 
 ## 运行方法

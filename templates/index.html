@@ -3,60 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>本地天文解析</title>
-    <!-- Tailwind CSS (样式) -->
+    <title>AstroLocal - 天体解析标注</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- HTMX (交互) -->
+    <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; }
-        .stars { background-image: radial-gradient(white 1px, transparent 1px); background-size: 50px 50px; }
+        body { background-color: #0b0f19; color: #e2e8f0; }
+        /* 简单的星空背景 */
+        .stars {
+            background-image: 
+                radial-gradient(white 1px, transparent 1px),
+                radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1px);
+            background-size: 50px 50px, 100px 100px;
+            background-position: 0 0, 25px 25px;
+        }
     </style>
 </head>
 <body class="min-h-screen stars flex flex-col items-center justify-center p-4">
 
-    <div class="w-full max-w-md bg-gray-900/80 backdrop-blur-md rounded-xl shadow-2xl border border-gray-700 overflow-hidden">
+    <div class="w-full max-w-lg bg-gray-900/90 backdrop-blur-xl rounded-xl shadow-2xl border border-gray-700 overflow-hidden relative">
+        
+        <!-- 装饰性光晕 -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-75"></div>
+
         <!-- 头部 -->
-        <div class="p-6 border-b border-gray-700 text-center">
-            <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-                ✨ AstroLocal
+        <div class="p-6 border-b border-gray-800 text-center">
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                🔭 AstroLocal
             </h1>
-            <p class="text-gray-400 text-sm mt-1">本地化天体标注系统</p>
+            <p class="text-gray-500 text-xs mt-2 uppercase tracking-widest">High Precision Plate Solving</p>
         </div>
 
         <!-- 内容区域 -->
         <div class="p-6" id="work-area">
             
-            <!-- 上传表单 -->
-            <!-- hx-post: 发送 POST 请求 -->
-            <!-- hx-encoding: 必须用于文件上传 -->
-            <!-- hx-target: 将返回的内容替换掉 #result-area -->
-            <form hx-post="/upload" hx-encoding="multipart/form-data" hx-target="#result-area" class="space-y-4">
+            <!-- 表单区域 -->
+            <!-- 注意: id="upload-form" 用于 JS 触发 -->
+            <form id="upload-form" 
+                  hx-post="/upload" 
+                  hx-encoding="multipart/form-data" 
+                  hx-target="#result-area" 
+                  class="space-y-5">
                 
-                <div class="flex items-center justify-center w-full">
-                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-700 transition-colors">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <p class="text-sm text-gray-400"><span class="font-semibold">点击上传</span> 或拖拽图片</p>
-                            <p class="text-xs text-gray-500 mt-1">JPG / JPEG (建议 < 10MB)</p>
+                <!-- 隐藏的 GPS 字段，由 JS 填充 -->
+                <input type="hidden" name="lat" id="gps-lat">
+                <input type="hidden" name="lon" id="gps-lon">
+
+                <!-- 文件上传控件 -->
+                <div class="group">
+                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-52 border-2 border-gray-700 border-dashed rounded-xl cursor-pointer bg-gray-800/50 hover:bg-gray-800 hover:border-blue-500 hover:text-blue-400 transition-all duration-300">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                            <svg class="w-12 h-12 mb-3 text-gray-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <p class="text-sm text-gray-400"><span class="font-semibold">点击选择图片</span> 或拖拽至此</p>
+                            <p class="text-xs text-gray-600 mt-2">支持 JPG / PNG (建议 < 20MB)</p>
                         </div>
-                        <!-- onchange 脚本是为了选图后显示文件名 -->
-                        <input id="dropzone-file" name="file" type="file" class="hidden" accept="image/jpeg" onchange="document.getElementById('file-name').innerText = this.files[0].name" />
+                        <input id="dropzone-file" name="file" type="file" class="hidden" accept="image/jpeg,image/png" onchange="updateFileName(this)" />
                     </label>
                 </div>
 
-                <div class="text-center text-sm text-blue-300 h-5" id="file-name"></div>
+                <!-- 状态信息显示 -->
+                <div class="flex justify-between items-end px-1 h-6">
+                    <span id="file-name-display" class="text-sm text-blue-300 truncate max-w-[60%]"></span>
+                    <span id="geo-status" class="text-xs text-gray-500 font-mono">等待操作...</span>
+                </div>
 
-                <button type="submit" class="w-full text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all">
-                    开始解析
+                <!-- 提交按钮 -->
+                <!-- type="button" 防止直接提交，必须通过 JS 获取 GPS 后再触发 -->
+                <button type="button" 
+                        id="submit-btn"
+                        onclick="handleUpload()"
+                        class="w-full text-white bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 focus:ring-4 focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-3 text-center transition-all shadow-lg shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                    获取定位并开始解析
                 </button>
             </form>
             
-            <!-- 结果/进度显示区域 -->
-            <div id="result-area" class="mt-6"></div>
-
+            <!-- 结果/进度显示区域 (HTMX 替换目标) -->
+            <div id="result-area" class="mt-8"></div>
         </div>
     </div>
+
+    <!-- 前端逻辑脚本 -->
+    <script>
+        // 1. 文件名回显
+        function updateFileName(input) {
+            const display = document.getElementById('file-name-display');
+            if (input.files && input.files.length > 0) {
+                display.textContent = "📄 " + input.files[0].name;
+            } else {
+                display.textContent = "";
+            }
+        }
+
+        // 2. 核心上传逻辑
+        function handleUpload() {
+            const fileInput = document.getElementById('dropzone-file');
+            const statusLabel = document.getElementById('geo-status');
+            const btn = document.getElementById('submit-btn');
+
+            // 校验是否选了文件
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("请先选择一张图片！");
+                return;
+            }
+
+            // 锁定按钮
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">正在获取 GPS...</span>';
+            statusLabel.innerText = "正在请求地理位置权限...";
+            statusLabel.className = "text-xs text-yellow-500 font-mono animate-pulse";
+
+            // 请求地理位置
+            if (!navigator.geolocation) {
+                alert("您的浏览器不支持地理位置功能，无法进行精确天文计算。");
+                resetBtn();
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                // 成功回调
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    // 填入隐藏字段
+                    document.getElementById('gps-lat').value = lat;
+                    document.getElementById('gps-lon').value = lon;
+
+                    statusLabel.innerText = `GPS锁定: ${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+                    statusLabel.className = "text-xs text-green-500 font-mono";
+                    
+                    btn.innerHTML = "正在上传...";
+                    
+                    // 触发 HTMX 提交
+                    htmx.trigger('#upload-form', 'submit');
+                    
+                    // 稍微延迟后重置按钮文字(因为HTMX会替换下方区域，但表单还在)
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = "上传下一张";
+                    }, 2000);
+                },
+                // 失败回调
+                (error) => {
+                    let msg = "定位失败";
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED: msg = "请允许浏览器获取位置权限"; break;
+                        case error.POSITION_UNAVAILABLE: msg = "无法确定位置"; break;
+                        case error.TIMEOUT: msg = "定位请求超时"; break;
+                    }
+                    alert(msg + "\n\n本系统需要经纬度来计算时区和地平坐标(Alt/Az)。");
+                    
+                    statusLabel.innerText = "定位失败";
+                    statusLabel.className = "text-xs text-red-500 font-mono";
+                    resetBtn();
+                },
+                // 选项
+                {
+                    enableHighAccuracy: true, // 尝试使用 GPS
+                    timeout: 10000,           // 10秒超时
+                    maximumAge: 0             // 强制不使用缓存
+                }
+            );
+        }
+
+        function resetBtn() {
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = false;
+            btn.innerHTML = "获取定位并开始解析";
+        }
+    </script>
 
 </body>
 </html>
