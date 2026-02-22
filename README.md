@@ -2,7 +2,9 @@
 
 **AstroLocal** 是一个基于 **Linux/WSL (Windows Subsystem for Linux)** 的本地天文盲解（Plate Solving）与标注工具。
 
-它将 **Astrometry.net** 引擎封装在一个现代化的 Web 界面中。按下面的操作部署，可为常用的摄影镜头焦段（80mm - 400mm 焦段）实现精准解析。无需上传图片到云端排队，利用本地算力实现解析，并自动叠加 **Messier/NGC/IC** 深空天体标注与星座连线。
+它将 **Astrometry.net** 引擎封装在一个现代化的 Web 界面中。按下面的操作部署，可为常用的摄影镜头焦段（80mm - 400mm 焦段）实现精准解析。无需上传图片到云端排队，利用本地算力实现解析，并自动叠加 **Messier/NGC/IC** 深空天体标注、星座连线和赤道网格。
+
+利用这一项目可以方便地精对极轴与盲寻星，具体可以参考 [我博客的这篇文章](https://dicaeopolis.github.io/astronomy/GOTO/)。
 
 ![Screenshot Placeholder](./annotated_example.png)
 
@@ -90,7 +92,7 @@ uv run uvicorn main:app --host 0.0.0.0 --port 8000
 *   **手机访问**: 确保手机和电脑在同一局域网，访问 `http://<WSL宿主机IP>:8000`
     *   *注*: WSL IP 可通过 `hostname -I` 查看。如果无法访问，可能需要配置 Windows 防火墙或端口转发。
 
-用手机查看的方便性在于可以直接拍摄相机屏幕实现即刻解析。
+用手机查看的方便性在于可以直接拍摄相机屏幕实现即刻解析，但实测速度不佳，最好的方式是手机或电脑连接相机之后下载降采样的拍摄图。
 
 ## 项目结构
 
