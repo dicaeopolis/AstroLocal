@@ -694,7 +694,7 @@ async def processing_pipeline(task_id, fpath, lat, lon):
         }
         job.update({
             "status": "done",
-            "log": f"完成: {cnt} objects",
+            "log": f"完成: 找到 {cnt} 个深空天体",
             "result_url": f"/static/{final_png.name}"
         })
 
